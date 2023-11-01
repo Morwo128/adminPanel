@@ -1,24 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Home from "./PostScreen.js";
+import AdminLogin from "./AdminLogin.js";
+import AdminPanel from "./AdminPanel.js";
+import Navigation from "./Navigation.js";
+import Cookies from "react-cookies";
 
 function App() {
+  const [user, setUser] = useState("");
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div>
+        {!Cookies.load("user") && <AdminLogin user={user} setUser={setUser} />}
+        {Cookies.load("user") && (
+          <div>
+            <Navigation />
+            <Routes>
+              <Route path="/" exact component={Home} />
+              <Route path="/admin" component={AdminPanel} />
+            </Routes>
+          </div>
+        )}
+      </div>
+    </Router>
   );
 }
 
