@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import "./AdminLogin.css";
-import Cookies from 'react-cookies';
+import Cookies from "react-cookies";
+import axios from "axios";
 
 function AdminLogin({ user, setUser }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const newErrors = {};
 
     if (!username) {
@@ -17,16 +18,32 @@ function AdminLogin({ user, setUser }) {
     if (!password) {
       newErrors.password = "Введіть пароль";
     }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    Cookies.save("user", JSON.stringify(user));
-    setUser({
-      avatar:
-        "https://lh3.googleusercontent.com/ogw/AKPQZvzsUgpRdftwNg_Eu8QGEQZZdAktIiyFAfsYsOqORQ=s32-c-mo",
-      name: "Volodymyr",
-    });
+
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("password", password);
+
+    try {
+      const response = await axios.post(
+        "https://meditation-api-b34b74f3e544.herokuapp.com/api/v1/access-token",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      Cookies.save("user", response.data.access_token);
+      setUser("asd");
+    } catch (error) {
+      console.error("Помилка запиту:", error);
+    }
   };
 
   return (
